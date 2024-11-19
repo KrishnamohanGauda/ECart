@@ -13,6 +13,7 @@ namespace ECart.Controllers
     public class CategoryController : Controller
     {
         private ECartDBContext db = new ECartDBContext();
+
         // GET: Category
         public ActionResult Index()
         {

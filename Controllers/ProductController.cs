@@ -14,6 +14,7 @@ namespace ECart.Controllers
     {
         private ECartDBContext db = new ECartDBContext();
 
+
         // GET: Product
         public ActionResult Index(int page = 1, int pageSize = 10)
         {

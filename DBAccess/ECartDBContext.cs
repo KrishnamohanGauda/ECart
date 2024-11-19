@@ -7,6 +7,7 @@ using ECart.Models;
 
 namespace ECart.DBAccess
 {
+
     public class ECartDBContext: DbContext
     {
         public ECartDBContext() : base("Constr")

@@ -6,6 +6,7 @@ using System.Web;
 
 namespace ECart.Models
 {
+
     public class Category
     {
         public int CategoryId { get; set; }

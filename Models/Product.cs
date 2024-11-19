@@ -5,6 +5,7 @@ using System.Web;
 
 namespace ECart.Models
 {
+
     public class Product
     {
         public int ProductId { get; set; } 

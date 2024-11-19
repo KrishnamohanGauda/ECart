@@ -1,0 +1,46 @@
+﻿@model IEnumerable<ECart.Models.Category>
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    @{
+        ViewBag.Title = "Category List";
+    }
+    <div>
+        <h2>@ViewBag.Title</h2>
+    </div>
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>CategoryId</th>
+                    <th>CategoryName</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var category in Model)
+                {
+                    <tr>
+                        <td>@category.CategoryId</td>
+                        <td>@category.CategoryName</td>
+                        <td>
+                            @Html.ActionLink("Edit", "Edit", new { id = category.CategoryId }) |
+                            @Html.ActionLink("Delete", "Delete", new { id = category.CategoryId })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @Html.ActionLink("Create New Category", "Create")
+
+    </div>
+
+</body>
+</html>

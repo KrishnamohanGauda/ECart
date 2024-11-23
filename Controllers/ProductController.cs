@@ -7,24 +7,25 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using ECart.Services;
 
 namespace ECart.Controllers
 {
     public class ProductController : Controller
     {
-        private ECartDBContext db = new ECartDBContext();
+        private IProductService _productService;
+
+        public ProductController(IProductService productService)
+        {
+            _productService = productService;
+        }
 
 
         // GET: Product
         public ActionResult Index(int page = 1, int pageSize = 10)
         {
-            var products = db.ProductsTable.Include(p => p.Category)
-                                      .OrderBy(p => p.ProductId)
-                                      .Skip((page - 1) * pageSize)
-                                      .Take(pageSize)
-                                      .ToList();
-
-            var totalProducts = db.ProductsTable.Count();
+            int totalProducts;
+            var products = _productService.GetAllProducts(page, pageSize, out totalProducts);
             var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
 
             ViewBag.TotalPages = totalPages;
@@ -36,7 +37,7 @@ namespace ECart.Controllers
         // GET: Product/Create
         public ActionResult Create()
         {
-            ViewBag.CategoryId = new SelectList(db.CategoryTable, "CategoryId", "CategoryName");
+            ViewBag.CategoryId = new SelectList(_productService.GetAllCategories(), "CategoryId", "CategoryName");
             return View();
         }
 
@@ -46,12 +47,11 @@ namespace ECart.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.ProductsTable.Add(product);
-                db.SaveChanges();
+                _productService.CreateProduct(product);
                 return RedirectToAction("Index");
             }
 
-            ViewBag.CategoryId = new SelectList(db.CategoryTable, "CategoryId", "CategoryName", product.CategoryId);
+            ViewBag.CategoryId = new SelectList(_productService.GetAllCategories(), "CategoryId", "CategoryName", product.CategoryId);
             return View(product);
         }
 
@@ -62,13 +62,13 @@ namespace ECart.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product product = db.ProductsTable.Find(id);
+            Product product = _productService.GetProductById(id.Value);
             if (product == null)
             {
                 return HttpNotFound();
             }
 
-            ViewBag.CategoryId = new SelectList(db.CategoryTable, "CategoryId", "CategoryName", product.CategoryId);
+            ViewBag.CategoryId = new SelectList(_productService.GetAllCategories(), "CategoryId", "CategoryName", product.CategoryId);
             return View(product);
         }
 
@@ -78,12 +78,11 @@ namespace ECart.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(product).State = EntityState.Modified;
-                db.SaveChanges();
+                _productService.UpdateProduct(product);
                 return RedirectToAction("Index");
             }
 
-            ViewBag.CategoryId = new SelectList(db.CategoryTable, "CategoryId", "CategoryName", product.CategoryId);
+            ViewBag.CategoryId = new SelectList(_productService.GetAllCategories(), "CategoryId", "CategoryName", product.CategoryId);
             return View(product);
         }
 
@@ -94,7 +93,7 @@ namespace ECart.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product product = db.ProductsTable.Find(id);
+            Product product =_productService.GetProductById(id.Value);
             if (product == null)
             {
                 return HttpNotFound();
@@ -106,9 +105,7 @@ namespace ECart.Controllers
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
-            Product product = db.ProductsTable.Find(id);
-            db.ProductsTable.Remove(product);
-            db.SaveChanges();
+            _productService.DeleteProduct(id);
             return RedirectToAction("Index");
         }
 

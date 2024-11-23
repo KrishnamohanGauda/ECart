@@ -7,20 +7,28 @@ using System.Web;
 using System.Web.Mvc;
 using ECart.DBAccess;
 using ECart.Models;
+using ECart.Services;
 
 namespace ECart.Controllers
 {
     public class CategoryController : Controller
     {
-        private ECartDBContext db = new ECartDBContext();
+        private ICategoryService _categoryService;
+
+        public CategoryController(ICategoryService categoryService)
+        {
+            _categoryService = categoryService;
+        }
 
         // GET: Category
+        //[Route("Category")]
         public ActionResult Index()
         {
-            return View(db.CategoryTable.ToList());
+            return View(_categoryService.GetAllCategories());
         }
 
         // GET: Category/Create
+        //[Route("NewCategory")]
         public ActionResult Create()
         {
             return View();
@@ -32,8 +40,7 @@ namespace ECart.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.CategoryTable.Add(category);
-                db.SaveChanges();
+                _categoryService.CreateCategory(category);
                 return RedirectToAction("Index");
             }
             return View(category);
@@ -46,7 +53,7 @@ namespace ECart.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Category category = db.CategoryTable.Find(id);
+            Category category = _categoryService.GetCategoryById(id.Value);
             if (category == null)
             {
                 return HttpNotFound();
@@ -60,8 +67,7 @@ namespace ECart.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(category).State = EntityState.Modified;
-                db.SaveChanges();
+                _categoryService.UpdateCategory(category);
                 return RedirectToAction("Index");
             }
             return View(category);
@@ -74,7 +80,7 @@ namespace ECart.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Category category = db.CategoryTable.Find(id);
+            Category category = _categoryService.GetCategoryById(id.Value);
             if (category == null)
             {
                 return HttpNotFound();
@@ -86,9 +92,7 @@ namespace ECart.Controllers
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
-            Category category = db.CategoryTable.Find(id);
-            db.CategoryTable.Remove(category);
-            db.SaveChanges();
+            _categoryService.DeleteCategory(id);
             return RedirectToAction("Index");
         }
 

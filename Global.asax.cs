@@ -13,6 +13,7 @@ namespace ECart
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
+            UnityConfig.RegisterComponents();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
         }
     }

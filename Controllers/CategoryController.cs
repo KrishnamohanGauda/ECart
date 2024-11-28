@@ -21,14 +21,12 @@ namespace ECart.Controllers
         }
 
         // GET: Category
-        //[Route("Category")]
         public ActionResult Index()
         {
             return View(_categoryService.GetAllCategories());
         }
 
         // GET: Category/Create
-        //[Route("NewCategory")]
         public ActionResult Create()
         {
             return View();
